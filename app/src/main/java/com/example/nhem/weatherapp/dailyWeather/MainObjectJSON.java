@@ -1,4 +1,7 @@
-package com.example.nhem.weatherapp;
+package com.example.nhem.weatherapp.dailyWeather;
+
+import com.example.nhem.weatherapp.dailyWeather.MainJSON;
+import com.example.nhem.weatherapp.dailyWeather.WeatherJSON;
 
 import java.util.List;
 

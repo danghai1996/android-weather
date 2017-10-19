@@ -2,15 +2,25 @@ package com.example.nhem.weatherapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nhem.weatherapp.adapter.WeatherAdapter;
+import com.example.nhem.weatherapp.dailyWeather.MainObjectJSON;
+import com.example.nhem.weatherapp.forecastWeather.list.ForecastObjectJSON;
+import com.example.nhem.weatherapp.forecastWeather.list.WeatherForecastListJSON;
+import com.example.nhem.weatherapp.utils.Utils;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.SimpleFormatter;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,12 +34,15 @@ public class MainActivity extends AppCompatActivity {
     private EditText etCityName;
     private Button btnSearch;
     private TextView tvCityName;
-    private TextView tvCountry;
     private TextView tvTemp;
     private TextView tvStatus;
     private TextView tvHumidity;
-    private TextView tvWind;
     private TextView tvDate;
+    private RecyclerView rvWeather;
+
+    private GetWeatherService weatherService;
+    private List<WeatherForecastListJSON> weatherList = new ArrayList<>();
+    private WeatherAdapter weatherAdapter;
 
     private static String APP_ID = "229306d15b7cc8b1e88f3fc4a3eee1c1";
 
@@ -37,29 +50,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupUI();
 
-        etCityName = (EditText) findViewById(R.id.et_cityname);
-        btnSearch = (Button) findViewById(R.id.btn_search);
-        tvCityName = (TextView) findViewById(R.id.tv_cityname);
-        tvTemp = (TextView) findViewById(R.id.tv_temp);
-        tvStatus = (TextView) findViewById(R.id.tv_status);
-        tvHumidity = (TextView) findViewById(R.id.tv_humidity);
-        tvDate = (TextView) findViewById(R.id.tv_date);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final String city = etCityName.getText().toString();
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://api.openweathermap.org/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
 
-                GetWeatherService getWeatherService = retrofit.create(GetWeatherService.class);
                 if (city == null) {
                     Toast.makeText(MainActivity.this, "Điền tên thành phố phù hợp", Toast.LENGTH_SHORT).show();
                 } else {
-                    getWeatherService.getWeatherData(city, APP_ID).enqueue(new Callback<MainObjectJSON>() {
+                    weatherService = Utils.getWeatherService();
+
+                    weatherService.getWeatherData(city, Conts.APP_ID).enqueue(new Callback<MainObjectJSON>() {
                         @Override
                         public void onResponse(Call<MainObjectJSON> call, Response<MainObjectJSON> response) {
                             if (response.body() != null) {
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                                 SimpleDateFormat simpleDateFormat= new SimpleDateFormat("EEEE HH:mm dd-MM-yyyy ");
                                 String day = simpleDateFormat.format(date);
                                 tvDate.setText("TimeUpdate: "+day);
+
                             } else {
                                 Toast.makeText(MainActivity.this, "Nhập tên thành phố phù hợp", Toast.LENGTH_SHORT).show();
                             }
@@ -84,9 +89,46 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "No conection", Toast.LENGTH_SHORT).show();
                         }
                     });
+
+                    weatherService = Utils.getWeatherService();
+                    weatherService.getWeatherForecastData(city, Conts.API_KEY).enqueue(new Callback<ForecastObjectJSON>() {
+                        @Override
+                        public void onResponse(Call<ForecastObjectJSON> call, Response<ForecastObjectJSON> response) {
+                            if (response.isSuccessful()) {
+                                weatherList.clear();
+                                List<WeatherForecastListJSON> list = response.body().getList();
+                                for (int i = 1; i < list.size(); i++) {
+                                    weatherList.add(list.get(i));
+                                }
+                                weatherAdapter = new WeatherAdapter(weatherList);
+                                rvWeather.setAdapter(weatherAdapter);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ForecastObjectJSON> call, Throwable t) {
+                            Log.d(TAG, "onFailure: ");
+                        }
+                    });
                 }
             }
         });
 
+    }
+
+    private void setupUI() {
+        etCityName = (EditText) findViewById(R.id.et_cityname);
+        btnSearch = (Button) findViewById(R.id.btn_search);
+        tvCityName = (TextView) findViewById(R.id.tv_cityname);
+        tvTemp = (TextView) findViewById(R.id.tv_temp);
+        tvStatus = (TextView) findViewById(R.id.tv_status);
+        tvHumidity = (TextView) findViewById(R.id.tv_humidity);
+        tvDate = (TextView) findViewById(R.id.tv_date);
+
+        rvWeather = (RecyclerView) findViewById(R.id.rv_weather);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        weatherAdapter = new WeatherAdapter(weatherList);
+        rvWeather.setAdapter(weatherAdapter);
+        rvWeather.setLayoutManager(linearLayoutManager);
     }
 }

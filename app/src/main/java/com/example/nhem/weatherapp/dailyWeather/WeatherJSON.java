@@ -1,4 +1,4 @@
-package com.example.nhem.weatherapp;
+package com.example.nhem.weatherapp.dailyWeather;
 
 /**
  * Created by NHEM on 13/10/2017.
