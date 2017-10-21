@@ -1,16 +1,20 @@
 package com.example.nhem.weatherapp.forecastWeather.list;
 
+import java.util.List;
+
 /**
  * Created by NHEM on 20/10/2017.
  */
 
-public class WeatherForecastListJSON {
+public class ListJSON {
     private long dt;
     private TempJSON temp;
+    private List<WeatherForecastJSON> weather;
 
-    public WeatherForecastListJSON(long dt, TempJSON temp) {
+    public ListJSON(long dt, TempJSON temp, List<WeatherForecastJSON> weather) {
         this.dt = dt;
         this.temp = temp;
+        this.weather = weather;
     }
 
     public long getDt() {
@@ -27,5 +31,13 @@ public class WeatherForecastListJSON {
 
     public void setTemp(TempJSON temp) {
         this.temp = temp;
+    }
+
+    public List<WeatherForecastJSON> getWeather() {
+        return weather;
+    }
+
+    public void setWeather(List<WeatherForecastJSON> weather) {
+        this.weather = weather;
     }
 }

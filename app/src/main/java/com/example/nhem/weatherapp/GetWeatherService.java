@@ -15,6 +15,6 @@ public interface GetWeatherService {
     @GET("data/2.5/weather")
     Call<MainObjectJSON> getWeatherData(@Query("q") String city, @Query("APPID") String appId);
 
-    @GET("data/2.5/weather/forecast/daily")
+    @GET("data/2.5/forecast/daily")
     Call<ForecastObjectJSON> getWeatherForecastData(@Query("q") String city, @Query("APIKEY") String apiKey);
 }

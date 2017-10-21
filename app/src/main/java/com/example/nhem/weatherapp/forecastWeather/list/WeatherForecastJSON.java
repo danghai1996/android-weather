@@ -1,19 +1,17 @@
-package com.example.nhem.weatherapp.dailyWeather;
+package com.example.nhem.weatherapp.forecastWeather.list;
 
 /**
- * Created by NHEM on 13/10/2017.
+ * Created by NHEM on 21/10/2017.
  */
 
-public class WeatherJSON {
+public class WeatherForecastJSON {
     private int id;
     private String main;
-    private String description;
     private String icon;
 
-    public WeatherJSON(int id, String main, String description, String icon) {
+    public WeatherForecastJSON(int id, String main, String icon) {
         this.id = id;
         this.main = main;
-        this.description = description;
         this.icon = icon;
     }
 
@@ -31,14 +29,6 @@ public class WeatherJSON {
 
     public void setMain(String main) {
         this.main = main;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getIcon() {

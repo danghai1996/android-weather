@@ -7,17 +7,17 @@ import java.util.List;
  */
 
 public class ForecastObjectJSON {
-    private List<WeatherForecastListJSON> list;
+    private List<ListJSON> list;
 
-    public ForecastObjectJSON(List<WeatherForecastListJSON> list) {
+    public ForecastObjectJSON(List<ListJSON> list) {
         this.list = list;
     }
 
-    public List<WeatherForecastListJSON> getList() {
+    public List<ListJSON> getList() {
         return list;
     }
 
-    public void setList(List<WeatherForecastListJSON> list) {
+    public void setList(List<ListJSON> list) {
         this.list = list;
     }
 }
